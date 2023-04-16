@@ -8,15 +8,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <ctime>
+#include <string>
 #include <sys/time.h> 
 #include "packets.h"
 
 #define TRUE 1
 #define FALSE 0
 #define PORT 8080
-void serialize(packets *packetToserialzie, char *data);
-void deSerialize(char *data, packets *NtpPacket);
-
 int main(int argc, char *argv[])
 {
     int opt = TRUE;
@@ -27,14 +25,13 @@ int main(int argc, char *argv[])
     struct sockaddr_in address;
     time_t t1, t2;
 
-    char buffer[1025]; 
+    char buffer[1025]={0}; 
 
     // set of socket descriptors
     fd_set readfds;
 
-    // a message
-    packets *timeInfo;
-    char *message = "ECHO Daemon v1.0 \r\n";
+    // class of ntp info
+    packets *timeInfo=new packets();
 
     // initialise all client_socket[] to 0 so not checked
     for (i = 0; i < max_clients; i++)
@@ -127,15 +124,16 @@ int main(int argc, char *argv[])
             // }
             // //set t2
             // puts("Welcome message sent successfully");
-            if (read(new_socket, buffer, 1024) == 0)
+            if (read(new_socket, buffer, 1024) ==0)
             {
                 t2=time(0);
+                //located in packets.h
                 deSerialize(buffer, timeInfo);
-                // set sourceaddr to local address
                 strcpy(timeInfo->dstaddr,inet_ntoa(address.sin_addr));
                 timeInfo->servrec = t1;
                 timeInfo->org = t2;
                 serialize(timeInfo, buffer);
+                printf("writing\n");
                 send(new_socket, buffer, sizeof(buffer), 0);
             }
 

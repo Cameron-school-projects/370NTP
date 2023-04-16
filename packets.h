@@ -1,75 +1,53 @@
-struct packets
+#include <string>
+class packets
 {
+public:
     char dstaddr[512]; /* destination (remote) address, needs to be 512 long */
     char srcaddr[512]; /* source (local) address, needs to be 512 long */
-    char leap;      /* leap indicator */
-    int org;     /* origin timestamp (t2)*/
-    int servrec;     /* receive timestamp (t1)*/
-    int xmt;     /* transmit timestamp (t0)*/
-    int ref; /*t3 client recive timestamp*/
+    char leap;         /* leap indicator */
+    int org;           /* origin timestamp (t2)*/
+    int servrec;       /* receive timestamp (t1)*/
+    int xmt;           /* transmit timestamp (t0)*/
+    int ref;           /*t3 client recive timestamp*/
 };
-void serialize(packets *packetToserialzie, char *data)
+void serialize(packets *packetToserialzie,  char *data)
 {
-    int BUFSIZE=512;
-    int *q = (int *)data;
-    char *p = (char *)q;
-    int i = 0;
-    while (i < BUFSIZE)
-    {
-        *p = packetToserialzie->dstaddr[i];
-        p++;
-        i++;
-    }
-    p++;
-    i = 0;
-    while (i < BUFSIZE)
-    {
-        *p = packetToserialzie->dstaddr[i];
-        p++;
-        i++;
-    }
-    p++;
-    q = (int *)p;
-    *q = packetToserialzie->leap;
-    q++;
-    *q = packetToserialzie->org;
-    q++;
-    *q = packetToserialzie->servrec;
-    q++;
-    *q = packetToserialzie->xmt;
-    q++;
-    *q = packetToserialzie->ref;
-    q++;
-
-    char *p = (char *)q;
+    // turn object into char* that is spaceS delimited
+    std::string test;
+    test = packetToserialzie->dstaddr;
+    test.append(" ");
+    test.append(packetToserialzie->srcaddr);
+    test.append(" ");
+    test.append(std::to_string(packetToserialzie->leap));
+    test.append(" ");
+    test.append(std::to_string(packetToserialzie->org));
+    test.append(" ");
+    test.append(std::to_string(packetToserialzie->servrec));
+    test.append(" ");
+    test.append(std::to_string(packetToserialzie->servrec));
+    test.append(" ");
+    test.append(std::to_string(packetToserialzie->ref));
+    const char* help = test.c_str();
+    strcpy(data,help);
 }
-void deSerialize(char *data, packets *NtpPacket)
+void deSerialize( char *data, packets *NtpPacket)
 {
-    int BUFSIZE=512;
-   char* p=data;
-    int i=0;
-    while(i<BUFSIZE){
-        NtpPacket->dstaddr[i]=*p;
-        p++;
-        i++;
-    }
-    p++;
-    i=0;
-    while(i<BUFSIZE){
-        NtpPacket->srcaddr[i]=*p;
-        p++;
-        i++;
-    }
-    p++;
-    int *q = (int *)data;
-    NtpPacket->leap = *q;
-    q++;
-    NtpPacket->org = *q;
-    q++;
-    NtpPacket->servrec = *q;
-    q++;
-    NtpPacket->xmt = *q;
-    q++;
-    NtpPacket->ref = *q;
-    q++;
+    char message[1024];
+    char *p;
+    // I wanted to create an iterator so i could just loop through my class and
+    strcpy(message, data);
+    p = strtok(message, " ");
+    strcpy(NtpPacket->dstaddr, p);
+    p = strtok(0, " \t");
+    strcpy(NtpPacket->srcaddr, p);
+    p = strtok(0, " \t");
+    NtpPacket->leap = atoi(p);
+    p = strtok(0, " \t");
+    NtpPacket->org = atoi(p);
+    p = strtok(0, " \t");
+    NtpPacket->servrec = atoi(p);
+    p = strtok(0, " \t");
+    NtpPacket->xmt = atoi(p);
+    p = strtok(0, " \t");
+    NtpPacket->ref = atoi(p);
 }
