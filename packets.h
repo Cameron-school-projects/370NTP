@@ -2,8 +2,8 @@
 class packets
 {
 public:
-    char dstaddr[512]; /* destination (remote) address, needs to be 512 long */
-    char srcaddr[512]; /* source (local) address, needs to be 512 long */
+    char dstaddr[50]; /* destination (remote) address, needs to be at least 46 long for ip addresses*/
+    char srcaddr[50]; /* source (local) address, needs to be at least 46 long for ip addresses*/
     char leap;         /* leap indicator */
     int org;           /* origin timestamp (t2)*/
     int servrec;       /* receive timestamp (t1)*/
