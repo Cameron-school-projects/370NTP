@@ -9,9 +9,11 @@
 #include <netinet/in.h>
 #include <ctime>
 #include <string>
+#include <chrono>
+#include <cstdint>
 #include <sys/time.h> 
 #include "packets.h"
-
+using namespace std::chrono;
 #define TRUE 1
 #define FALSE 0
 #define PORT 8080
@@ -115,7 +117,7 @@ int main(int argc, char *argv[])
                 perror("accept");
                 exit(EXIT_FAILURE);
             }
-            t1=time(0);
+            t1=duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
             printf("New connection , socket fd is %d , ip is : %s , port : %d\n", new_socket, inet_ntoa(address.sin_addr), ntohs(address.sin_port));
             // //send new connection greeting message
             // if( send(new_socket, message, strlen(message), 0) != strlen(message))
@@ -126,7 +128,7 @@ int main(int argc, char *argv[])
             // puts("Welcome message sent successfully");
             if (read(new_socket, buffer, 1024) ==0)
             {
-                t2=time(0);
+                t2=duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
                 //located in packets.h
                 deSerialize(buffer, timeInfo);
                 strcpy(timeInfo->dstaddr,inet_ntoa(address.sin_addr));
@@ -136,7 +138,6 @@ int main(int argc, char *argv[])
                 printf("writing\n");
                 send(new_socket, buffer, sizeof(buffer), 0);
             }
-
             // add new socket to array of sockets
             for (i = 0; i < max_clients; i++)
             {
@@ -161,10 +162,12 @@ int main(int argc, char *argv[])
                             (socklen_t *)&addrlen);
                 printf("Host disconnected , ip %s , port %d \n",
                        inet_ntoa(address.sin_addr), ntohs(address.sin_port));
-
+                
                 close(sd);
                 client_socket[i] = 0;
+                break;
             }
+
         }
     }
 
