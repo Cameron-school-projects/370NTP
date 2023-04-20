@@ -61,6 +61,7 @@ int main()
 
     deSerialize(data, ntpPacket);
     t3 = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-    timeDelta = ((ntpPacket->servrec - t0) + (ntpPacket->org - t3)) / 2;
+    timeDelta = ((ntpPacket->servrec - t0) + (ntpPacket->org - t3));
+    timeDelta/=2;
     printf("time delta is %d\n", timeDelta);
 }

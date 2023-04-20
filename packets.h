@@ -13,6 +13,8 @@ public:
 void serialize(packets *packetToserialzie,  char *data)
 {
     // turn object into char* that is spaceS delimited
+    // if I had more time/this was for a real enviroment, i would not use a string and just convert the class directly to a byte array
+    // but for this case preformance is not a huge deal, and this is easier to implement
     std::string test;
     test = packetToserialzie->dstaddr;
     test.append(" ");
@@ -32,22 +34,22 @@ void serialize(packets *packetToserialzie,  char *data)
 }
 void deSerialize( char *data, packets *NtpPacket)
 {
+    //tokenize the data and turn it back into the class
     char message[1024];
     char *p;
-    // I wanted to create an iterator so i could just loop through my class and
     strcpy(message, data);
     p = strtok(message, " ");
     strcpy(NtpPacket->dstaddr, p);
     p = strtok(0, " \t");
     strcpy(NtpPacket->srcaddr, p);
     p = strtok(0, " \t");
-    NtpPacket->leap = atoi(p);
+    NtpPacket->leap = std::stoull(p);
     p = strtok(0, " \t");
-    NtpPacket->org = atoi(p);
+    NtpPacket->org = std::stoull(p);
     p = strtok(0, " \t");
-    NtpPacket->servrec = atoi(p);
+    NtpPacket->servrec = std::stoull(p);
     p = strtok(0, " \t");
-    NtpPacket->xmt = atoi(p);
+    NtpPacket->xmt = std::stoull(p);
     p = strtok(0, " \t");
-    NtpPacket->ref = atoi(p);
+    NtpPacket->ref = std::stoull(p);
 }
