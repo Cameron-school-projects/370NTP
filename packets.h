@@ -5,10 +5,10 @@ public:
     char dstaddr[50]; /* destination (remote) address, needs to be at least 46 long for ip addresses*/
     char srcaddr[50]; /* source (local) address, needs to be at least 46 long for ip addresses*/
     char leap;         /* leap indicator */
-    uint64_t org;           /* origin timestamp (t2)*/
-    uint64_t servrec;       /* receive timestamp (t1)*/
-    uint64_t xmt;           /* transmit timestamp (t0)*/
-    uint64_t ref;           /*t3 client recive timestamp*/
+    int64_t org;           /* origin timestamp (t2)*/
+    int64_t servrec;       /* receive timestamp (t1)*/
+    int64_t xmt;           /* transmit timestamp (t0)*/
+    int64_t ref;           /*t3 client recive timestamp*/
 };
 void serialize(packets *packetToserialzie,  char *data)
 {

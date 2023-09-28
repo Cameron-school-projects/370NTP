@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <sys/time.h> 
 #include "packets.h"
+//used so we an get time in milliseconds 
 using namespace std::chrono;
 #define TRUE 1
 #define FALSE 0
@@ -25,17 +26,15 @@ int main(int argc, char *argv[])
     int activity, i, valread, sd;
     int max_sd;
     struct sockaddr_in address;
-    time_t t1, t2;
+    int64_t t1, t2;
 
     char buffer[1025]={0}; 
 
-    // set of socket descriptors
     fd_set readfds;
 
     // class of ntp info
     packets *timeInfo=new packets();
 
-    // initialise all client_socket[] to 0 so not checked
     for (i = 0; i < max_clients; i++)
     {
         client_socket[i] = 0;
@@ -56,12 +55,10 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // type of socket created
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
 
-    // bind the socket to localhost port 8080
     if (bind(master_socket, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
         perror("bind failed");
@@ -76,13 +73,11 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // accept the incoming connection
     addrlen = sizeof(address);
     puts("Waiting for connections ...");
 
     while (TRUE)
     {
-        // clear the socket set
         FD_ZERO(&readfds);
 
         // add master socket to set
@@ -119,13 +114,6 @@ int main(int argc, char *argv[])
             }
             t1=duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
             printf("New connection , socket fd is %d , ip is : %s , port : %d\n", new_socket, inet_ntoa(address.sin_addr), ntohs(address.sin_port));
-            // //send new connection greeting message
-            // if( send(new_socket, message, strlen(message), 0) != strlen(message))
-            // {
-            // 	perror("send");
-            // }
-            // //set t2
-            // puts("Welcome message sent successfully");
             if (read(new_socket, buffer, 1024) ==0)
             {
                 t2=duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
